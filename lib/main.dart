@@ -18,9 +18,13 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Quicksand',
         textTheme: ThemeData.light().textTheme.copyWith(
               title: TextStyle(
-                  fontFamily: 'Opensans',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20),
+                fontFamily: 'Opensans',
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+              button: TextStyle(
+                color: Colors.white,
+              ),
             ),
         appBarTheme: AppBarTheme(
             textTheme: ThemeData.light().textTheme.copyWith(
@@ -42,19 +46,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
   final List<Transaction> _userTransactions = [
-    // Transaction(
-    //   id: 't1',
-    //   title: 'New Shoes',
-    //   amount: 69.99,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't1',
-    //   title: 'Weekly Groceries',
-    //   amount: 16.15,
-    //   date: DateTime.now(),
-    // ),
+    Transaction(
+      id: 't1',
+      title: 'New Shoes',
+      amount: 69.99,
+      date: DateTime.now(),
+    ),
+    Transaction(
+      id: 't1',
+      title: 'Weekly Groceries',
+      amount: 16.15,
+      date: DateTime.now(),
+    ),
   ];
 
   List<Transaction> get _recentTransactions {
@@ -67,12 +72,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  void _addNewTransaction(String title, double amount) {
+  void _addNewTransaction(String title, double amount, DateTime chosenDate) {
     final newTx = Transaction(
       id: DateTime.now().toString(),
       title: title,
       amount: amount,
-      date: DateTime.now(),
+      date: chosenDate,
     );
 
     setState(() {
@@ -82,14 +87,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _starAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
-        context: ctx,
-        builder: (_) {
-          return GestureDetector(
-            onTap: () {},
-            child: NewTransaction(_addNewTransaction),
-            behavior: HitTestBehavior.opaque,
-          );
-        });
+      context: ctx,
+      builder: (_) {
+        return GestureDetector(
+          onTap: () {},
+          child: NewTransaction(_addNewTransaction),
+          behavior: HitTestBehavior.opaque,
+        );
+      },
+    );
+  }
+
+  void _deleteTransaction(String id) {
+    setState(() {
+      _userTransactions.removeWhere((tx) => tx.id == id);
+    });
   }
 
   @override
@@ -112,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Chart(_recentTransactions),
-            TransactionList(_userTransactions),
+            TransactionList(_userTransactions, _deleteTransaction),
           ],
         ),
       ),
